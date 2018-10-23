@@ -161,25 +161,54 @@ describe("routes : wikis", () => {
 
       describe("POST /wikis/:id/update", () => {
 
-         it("should update the wiki with the given values", (done) => {
+        it("should update the wiki with the given values", (done) => {
+          request.post({
+              url: `${base}${this.wiki.id}/update`,
+              form: {
+                title: "The Mansions of Madness",
+                body: "One of the best tabletop games!",
+                userId: this.user.id
+              }
+          }, (err, res, body) => {
+              expect(err).toBeNull();
+              Wiki.findOne({
+                where: {id:1}
+              })
+              .then((wiki) => {
+                expect(wiki.title).toBe("The Mansions of Madness");
+                done();
+              });
+          });
+        });
+
+        it("should allow other users to update the wiki with the given values", (done) => {
+          User.create({
+            name: "Alex Summers",
+            email: "havok@xavier.edu",
+            password: "reekingHavok"
+          })
+          .then((user) => {
             request.post({
-               url: `${base}${this.wiki.id}/update`,
-               form: {
-                  title: "The Mansions of Madness",
-                  body: "One of the best tabletop games!",
-                  userId: this.user.id
-               }
+              url: `${base}${this.wiki.id}/update`,
+              form: {
+                title: "The Mansions of Madness!",
+                body: "The best tabletop games!",
+                userId: user.id
+              }
             }, (err, res, body) => {
-               expect(err).toBeNull();
-               Wiki.findOne({
-                  where: {id:1}
-               })
-               .then((wiki) => {
-                  expect(wiki.title).toBe("The Mansions of Madness");
-                  done();
-               });
+              expect(err).toBeNull();
+              expect(user.id).toBe(3);
+              Wiki.findOne({
+                where: {id:1}
+              })
+              .then((wiki) => {
+                expect(wiki.userId).toBe(3);
+                expect(wiki.title).toBe("The Mansions of Madness!");
+                done();
+              });
             });
-         });
+          })
+        });
 
       });
 

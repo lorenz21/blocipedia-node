@@ -65,7 +65,6 @@ describe("Wiki", () => {
          })
          .catch((err) => {
             expect(err.message).toContain("Wiki.body cannot be null");
-            expect(err.message).toContain("Wiki.private cannot be null");
             expect(err.message).toContain("Wiki.userId cannot be null");
             done();
          });
