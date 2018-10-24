@@ -72,6 +72,19 @@ module.exports = {
   },
   updatePremium(req, res, next){
     // User role (1) = Standard User
+    var stripe = require("stripe")("sk_test_BzZRi566CbNn6JzHnpvYbvDO");
+
+    // Token is created using Checkout or Elements!
+    // Get the payment token ID submitted by the form:
+    const token = req.body.stripeToken; // Using Express
+
+    const charge = stripe.charges.create({
+      amount: 999,
+      currency: 'usd',
+      description: 'Example charge',
+      source: token,
+    });
+
     userQueries.updateUserRole(req.params.id, 1, (err, user) => {
       if(err || user == null) {
         req.flash("notice", "No user found with that ID.");
