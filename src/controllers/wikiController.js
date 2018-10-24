@@ -3,14 +3,38 @@ const Authorizer = require("../policies/wiki");
 
 module.exports = {
    index(req, res, next) {
-      wikiQueries.getAllWikis((err, wikis) => {
-         if(err){
-            res.redirect(500, "static/index");
-         }
-         else{
-            res.render("wikis/index", {wikis});
-         }
+      if(req.user){
+        if(req.user.role == 1 || req.user.role == 2) {
+          wikiQueries.getAllWikis((err, wikis) => {
+            if(err){
+                res.redirect(500, "static/index");
+            }
+            else{
+                res.render("wikis/index", {wikis});
+            }
+          })
+        }
+        else{
+          console.log("Made it to public wikis");
+          wikiQueries.getAllPublicWikis((err, wikis) => {
+            if(err){
+              res.redirect(500, "static/index");
+            }
+            else{
+              res.render("wikis/index", {wikis});
+            }
+          })
+        }
+      }
+      wikiQueries.getAllPublicWikis((err, wikis) => {
+        if(err){
+          res.redirect(500, "static/index");
+        }
+        else{
+          res.render("wikis/index", {wikis});
+        }
       })
+      
    },
    new(req, res, next) {
       res.render("wikis/new");
@@ -76,5 +100,47 @@ module.exports = {
             res.redirect(`/wikis/${wiki.id}`);
          }
       });
-   }
+   },
+   makePrivate(req, res, next){
+      if(req.user.role == 1 || req.user.role == 2) {
+         wikiQueries.updateWikiStatus(req, true, (err, wiki) => {
+            if(err || wiki == null) {
+              res.redirect(404, `/wikis/${wiki.id}`);
+            }
+            else {
+                const authorized = new Authorizer(req.user, wiki).edit();
+                if(authorized){
+                   req.flash("notice", "You have made this wiki PRIVATE and only viewable to you and your collaborators");
+                   res.redirect(`/wikis/${wiki.id}`);
+                }
+             } 
+    
+          })
+      }
+      else {
+         req.flash("notice", "You are not authorized to do that. Upgrage to a premium account to make private wikis");
+         res.redirect(`/wikis/${req.params.id}`);
+      }
+   },
+   makePublic(req, res, next){
+      if(req.user.role == 1 || req.user.role == 2) {
+         wikiQueries.updateWikiStatus(req, false, (err, wiki) => {
+            if(err || wiki == null) {
+              res.redirect(404, `/wikis/${wiki.id}`);
+            }
+            else {
+                const authorized = new Authorizer(req.user, wiki).edit();
+                if(authorized){
+                   req.flash("notice", "You have made this wiki PUBLIC and is viewable to anyone");
+                   res.redirect(`/wikis/${wiki.id}`);
+                }
+             } 
+    
+          })
+      }
+      else {
+         req.flash("notice", "You are not authorized to do that. Upgrage to a premium account to make private wikis");
+         res.redirect(`/wikis/${req.params.id}`);
+      }
+   },
 }
