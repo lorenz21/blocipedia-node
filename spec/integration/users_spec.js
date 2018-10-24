@@ -81,13 +81,40 @@ describe("routes : users", () => {
          })
       });
 
+      it("should create a new user with default role of standard (0)", (done) => {
+            const options = {
+               url: base + "signup",
+               form: {
+                  name: "Ororo Munroe",
+                  email: "ororo@example.com",
+                  password: "12345678"
+               }
+            }
+   
+            request.post(options, (err, res, body) => {
+               User.findOne({where: {email: "ororo@example.com"}})
+               .then((user) => {
+                  expect(user).not.toBeNull();
+                  expect(user.email).toBe("ororo@example.com");
+                  expect(user.id).toBe(1);
+                  expect(user.role).toBe(0);
+                  done();
+               })
+               .catch((err) => {
+                  console.log(err);
+                  done();
+               });
+            })
+   
+      });
+
       it("should render a view with sign in form", (done) => {
             request.get(`${base}signin`, (err, res, body) => {
                expect(err).toBeNull();
                expect(body).toContain("Sign in");
                done();
             });
-         });
+      });
 
    });
 
