@@ -11,6 +11,19 @@ module.exports = {
          callback(err);
       });
    },
+   getAllPublicWikis(callback) {
+      return Wiki.all({
+         where: {
+            private: false
+         }
+      })
+      .then((wikis) => {
+         callback(null, wikis);
+      })
+      .catch((err) => {
+         callback(err);
+      });
+   },
    addWiki(newWiki, callback) {
       return Wiki.create(newWiki)
       .then((wiki) => {
@@ -40,15 +53,13 @@ module.exports = {
          callback(err);
       });
    },
-   updateWiki(req, updatedWiki, callback) {
+   updateWikiStatus(req, updatedStatus, callback) {
       return Wiki.findById(req.params.id)
       .then((wiki) => {
          if(!wiki){
             return callback("Wiki not found");
          }
-         wiki.update(updatedWiki, {
-            fields: Object.keys(updatedWiki)
-         })
+         return wiki.update({private: updatedStatus}, {fields:['private']})
          .then(() => {
             callback(null, wiki);
          })
