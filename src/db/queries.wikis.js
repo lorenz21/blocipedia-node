@@ -53,6 +53,23 @@ module.exports = {
          callback(err);
       });
    },
+   updateWiki(req, updatedWiki, callback) {
+      return Wiki.findById(req.params.id)
+      .then((wiki) => {
+         if(!wiki){
+            return callback("Wiki not found");
+         }
+         wiki.update(updatedWiki, {
+            fields: Object.keys(updatedWiki)
+         })
+         .then(() => {
+            callback(null, wiki);
+         })
+         .catch((err) => {
+            callback(err);
+         });
+      })
+   },
    updateWikiStatus(req, updatedStatus, callback) {
       return Wiki.findById(req.params.id)
       .then((wiki) => {
