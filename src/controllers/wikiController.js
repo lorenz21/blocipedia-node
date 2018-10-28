@@ -5,37 +5,46 @@ const markdown = require("markdown").markdown;
 module.exports = {
    index(req, res, next) {
       if(req.user){
-        if(req.user.role == 1 || req.user.role == 2) {
-          wikiQueries.getAllWikis((err, wikis) => {
-            if(err){
-                res.redirect(500, "static/index");
-            }
-            else{
-                res.render("wikis/index", {wikis});
-            }
-          })
-        }
-        else{
-          console.log("Made it to public wikis");
-          wikiQueries.getAllPublicWikis((err, wikis) => {
-            if(err){
+        let userWikis = [];
+        wikiQueries.getAllWikis((err, wikis) => {
+          if(err){
               res.redirect(500, "static/index");
-            }
-            else{
-              res.render("wikis/index", {wikis});
-            }
-          })
-        }
+          }
+          else{
+              wikis.forEach(wiki => {
+                if(wiki.private){
+                  if(wiki.collaborators){
+                    wiki.collaborators.forEach(collaborator => {
+                      if(collaborator.userId == req.user.id && wiki.id == collaborator.wikiId || req.user.role == 2 || req.user.id == wiki.userId) {
+                        userWikis.push(wiki)
+                      }
+                    })
+                  }
+                  else{
+                    if(req.user.role == 2 || req.user.id == wiki.userId){
+                      userWikis.push(wiki)
+                    }
+                  } 
+                }
+                else{
+                  userWikis.push(wiki)
+                }
+              });
+              console.log(userWikis);
+              res.render("wikis/index", {userWikis});
+          }
+        })
       }
-      wikiQueries.getAllPublicWikis((err, wikis) => {
-        if(err){
-          res.redirect(500, "static/index");
-        }
-        else{
-          res.render("wikis/index", {wikis});
-        }
-      })
-      
+      else{
+        wikiQueries.getAllPublicWikis((err, wikis) => {
+          if(err){
+            res.redirect(500, "static/index");
+          }
+          else{
+            res.render("wikis/index", {wikis});
+          }
+        })
+      }
    },
    new(req, res, next) {
       res.render("wikis/new");
@@ -57,18 +66,40 @@ module.exports = {
    },
    show(req, res, next) {
       wikiQueries.getWiki(req.params.id, (err, wiki) => {
-        let wikiMarkdown = {
-          title: markdown.toHTML(wiki.title),
-          body: markdown.toHTML(wiki.body),
-          private: wiki.private,
-          userId: wiki.userId,
-          id: wiki.id
-        };
-         if(err || wiki == null) {
+         if(err || wiki == null ) {
+            console.log(err);
             res.redirect(404, "/");
          }
          else {
-            res. render("wikis/show", {wikiMarkdown});
+
+            if(wiki.private){
+                for(let i=0; i<=wiki.collaborators.length; i++){
+                  if(req.user.role == 1 && wiki.userId == req.user.id || wiki.collaborators[i].userId == req.user.id || req.user.role == 2){
+                    let wikiMarkdown = {
+                      title: markdown.toHTML(wiki.title),
+                      body: markdown.toHTML(wiki.body),
+                      private: wiki.private,
+                      userId: wiki.userId,
+                      id: wiki.id,
+                      collaborators: wiki.collaborators[i]
+                    };
+                    res. render("wikis/show", {wikiMarkdown});
+                  }
+                  else {
+                    res.redirect(404, "/wikis");
+                  }
+                }
+            }
+            else {
+              let wikiMarkdown = {
+                title: markdown.toHTML(wiki.title),
+                body: markdown.toHTML(wiki.body),
+                private: wiki.private,
+                userId: wiki.userId,
+                id: wiki.id
+              };
+              res. render("wikis/show", {wikiMarkdown});
+            }
          }
       });
    },

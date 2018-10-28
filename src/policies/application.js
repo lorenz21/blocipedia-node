@@ -12,6 +12,14 @@ module.exports = class ApplicationPolicy {
       return this.user && this.user.role == 2;
    }
 
+   _isPrivate() {
+      return this.record && this.record.private == true;
+   }
+
+   _isPublic() {
+      return this.record && this.record.private == false;
+   }
+
    new() {
       return this.user != null;
    }
@@ -29,6 +37,6 @@ module.exports = class ApplicationPolicy {
    }
  
    destroy() {
-   return this.update();
+      return this.update();
    }
 }
