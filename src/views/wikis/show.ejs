@@ -8,30 +8,39 @@
 
    <main class="container">
      <%- include('../static/partials/messages.ejs') -%>
-
      <h1><%- wikiMarkdown.title %></h1>
-     <% if (currentUser) { %>
-      <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
-      <% if(currentUser.id === wikiMarkdown.userId || currentUser.isAdmin()) { %>
-        <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/destroy" method="post">
-          <button type="submit" class="btn btn-danger">Delete</button>
-        </form>
-      <% } %>
-      <% if(currentUser.isPremium() || currentUser.isAdmin()) { %>
-        <% if(wikiMarkdown.private === true) { %>
+     <p><%- wikiMarkdown.body %></p>
+     <% if (wikiMarkdown.private === true) { %>
+
+      <% if(currentUser.isPremium() && currentUser.id === wikiMarkdown.userId || currentUser.isAdmin()) { %>
           <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/public" method="post">
             <button type="submit" class="btn btn-info">Make Public</button>
           </form>
-        <% } else { %>
-        <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/private" method="post">
-          <button type="submit" class="btn btn-dark">Make Private</button>
-        </form>
-        <% } %>
+          <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
+          <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/destroy" method="post">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form> 
       <% } %>
 
-     <% } %>
+      <% if(wikiMarkdown.collaborators) { %>
+        <% if(currentUser.id === wikiMarkdown.collaborators.userId) { %> 
+          <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
+        <% } %> 
+      <% } %>
 
-     <p><%- wikiMarkdown.body %></p>
+     <% } else { %>
+        <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
+        <% if(currentUser) { %>
+          <% if(currentUser.isPremium() && currentUser.id === wikiMarkdown.userId || currentUser.isAdmin()) { %>
+            <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/destroy" method="post">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form> 
+            <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/private" method="post">
+              <button type="submit" class="btn btn-dark">Make Private</button>
+            </form>
+          <% } %>
+        <% } %>
+      <% } %>
    </main>
    
    <%- include('../static/partials/baseScripts.ejs') -%>
