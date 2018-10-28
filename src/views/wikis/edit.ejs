@@ -8,6 +8,9 @@
 
     <main class="container">
       <%- include('../static/partials/messages.ejs') -%>
+      <% if(currentUser.isPremium() && currentUser.id === wiki.userId || currentUser.isAdmin()) { %>
+        <a class="btn btn-primary float-right" href="collaborators/" role="button">Add Collaborators</a>
+      <% } %>
       <h1>Edit Wiki</h1>
       <form action="/wikis/<%= wiki.id %>/update" method="post">
         <div class="form-group">
