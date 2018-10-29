@@ -1,9 +1,14 @@
 const Wiki = require("./models").Wiki;
+const Collaborator = require("./models").Collaborator;
 
 module.exports = {
    getAllWikis(callback) {
-      return Wiki.all()
-
+      return Wiki.all({
+         include: [{
+            model: Collaborator,
+            as: "collaborators"
+         }]
+      })
       .then((wikis) => {
          callback(null, wikis);
       })
@@ -13,9 +18,13 @@ module.exports = {
    },
    getAllPublicWikis(callback) {
       return Wiki.all({
-         where: {
-            private: false
-         }
+         where: { private: false},
+         include: [
+            {
+               model: Collaborator, 
+               as: "collaborators", 
+            }
+         ],
       })
       .then((wikis) => {
          callback(null, wikis);
@@ -34,7 +43,12 @@ module.exports = {
       });
    },
    getWiki(id, callback) {
-      return Wiki.findById(id)
+      return Wiki.findById(id, {
+         include: [{
+            model: Collaborator,
+            as: "collaborators"
+         }],
+      })
       .then((wiki) => {
          callback(null, wiki);
       })
@@ -84,5 +98,21 @@ module.exports = {
             callback(err);
          });
       })
+   },
+   downgradePrivate(req, callback) {
+      console.log(req.user.id);
+      return Wiki.all()
+      .then((wikis) => {
+         wikis.forEach((wiki) => {
+            if(wiki.userId == req.user.id && wiki.private == true){
+               wiki.update({
+                  private: false
+               })
+            }
+         });
+      })
+      .catch((err) => {
+         callback(err);
+      });
    }
 }

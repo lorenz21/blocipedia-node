@@ -1,4 +1,5 @@
 const userQueries = require("../db/queries.users");
+const wikiQueries = require("../db/queries.wikis");
 const passport = require("passport");
 const sgMail = require('@sendgrid/mail');
 
@@ -70,6 +71,18 @@ module.exports = {
       }
     });
   },
+  showAll(req, res, next){
+    console.log("Made it to show all");
+    userQueries.getAllUsers((err, users) => {
+      if(err){
+          res.redirect(500, "static/index");
+      }
+      else{
+          console.log(users);
+          res.render("wikis/edit", {users});
+      }
+    })
+  },
   updatePremium(req, res, next){
     // User role (1) = Standard User
     var stripe = require("stripe")("sk_test_BzZRi566CbNn6JzHnpvYbvDO");
@@ -106,6 +119,7 @@ module.exports = {
         req.flash("notice", "Your account has been downgraded to a standard account");
         res.redirect(`/users/${req.params.id}`);
       }
-    })
+    });
+    wikiQueries.downgradePrivate(req);
   },
 }
