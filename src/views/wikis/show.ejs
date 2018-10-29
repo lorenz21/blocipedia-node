@@ -11,53 +11,31 @@
      <h1><%- wikiMarkdown.title %></h1>
      <p><%- wikiMarkdown.body %></p>
      <% if (wikiMarkdown.private === true) { %>
-
-<<<<<<< HEAD
-     <h1><%- wikiMarkdown.title %></h1>
-     <% if (currentUser) { %>
-      <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
-      <% if(currentUser.id === wikiMarkdown.userId || currentUser.isAdmin()) { %>
-        <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/destroy" method="post">
-          <button type="submit" class="btn btn-danger">Delete</button>
-        </form>
-      <% } %>
-      <% if(currentUser.isPremium() || currentUser.isAdmin()) { %>
-        <% if(wikiMarkdown.private === true) { %>
-          <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/public" method="post">
-            <button type="submit" class="btn btn-info">Make Public</button>
-          </form>
-        <% } else { %>
-=======
       <% if(currentUser.isPremium() && currentUser.id === wikiMarkdown.userId || currentUser.isAdmin()) { %>
           <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/public" method="post">
             <button type="submit" class="btn btn-info">Make Public</button>
           </form>
           <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
->>>>>>> 9979d3ed40696d6992fdc4a93089220c27880cf2
         <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/private" method="post">
           <button type="submit" class="btn btn-dark">Make Private</button>
         </form>
       <% } %>
-
       <% if(currentUser.id === wikiMarkdown.collaborators.userId) { %> 
         <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
       <% } %> 
-
-<<<<<<< HEAD
-     <p><%- wikiMarkdown.body %></p>
-=======
      <% } else { %>
         <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
-        <% if(currentUser.isPremium() && currentUser.id === wikiMarkdown.userId || currentUser.isAdmin()) { %>
-          <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/destroy" method="post">
-            <button type="submit" class="btn btn-danger">Delete</button>
-          </form> 
-          <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/private" method="post">
-            <button type="submit" class="btn btn-dark">Make Private</button>
-          </form>
+        <% if(currentUser) { %>
+          <% if(currentUser.isPremium() && currentUser.id === wikiMarkdown.userId || currentUser.isAdmin()) { %>
+            <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/destroy" method="post">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form> 
+            <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/private" method="post">
+              <button type="submit" class="btn btn-dark">Make Private</button>
+            </form>
+          <% } %>
         <% } %>
       <% } %>
->>>>>>> 9979d3ed40696d6992fdc4a93089220c27880cf2
    </main>
    
    <%- include('../static/partials/baseScripts.ejs') -%>
