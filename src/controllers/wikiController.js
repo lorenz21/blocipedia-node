@@ -30,18 +30,19 @@ module.exports = {
                   userWikis.push(wiki)
                 }
               });
-              console.log(userWikis);
               res.render("wikis/index", {userWikis});
           }
         })
       }
       else{
+        let userWikis = [];
         wikiQueries.getAllPublicWikis((err, wikis) => {
           if(err){
             res.redirect(500, "static/index");
           }
           else{
-            res.render("wikis/index", {wikis});
+            userWikis = wikis;
+            res.render("wikis/index", {userWikis});
           }
         })
       }
