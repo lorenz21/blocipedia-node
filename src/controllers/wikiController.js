@@ -67,20 +67,6 @@ module.exports = {
    },
    show(req, res, next) {
       wikiQueries.getWiki(req.params.id, (err, wiki) => {
-<<<<<<< HEAD
-        let wikiMarkdown = {
-          title: markdown.toHTML(wiki.title),
-          body: markdown.toHTML(wiki.body),
-          private: wiki.private,
-          userId: wiki.userId,
-          id: wiki.id
-        };
-         if(err || wiki == null) {
-            res.redirect(404, "/");
-         }
-         else {
-            res. render("wikis/show", {wikiMarkdown});
-=======
          if(err || wiki == null ) {
             console.log(err);
             res.redirect(404, "/");
@@ -115,7 +101,6 @@ module.exports = {
               };
               res. render("wikis/show", {wikiMarkdown});
             }
->>>>>>> 9979d3ed40696d6992fdc4a93089220c27880cf2
          }
       });
    },
