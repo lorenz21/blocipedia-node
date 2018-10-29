@@ -13,7 +13,7 @@ module.exports = {
           else{
               wikis.forEach(wiki => {
                 if(wiki.private){
-                  if(wiki.collaborators){
+                  if(wiki.collaborators.length !==0 ){
                     wiki.collaborators.forEach(collaborator => {
                       if(collaborator.userId == req.user.id && wiki.id == collaborator.wikiId || req.user.role == 2 || req.user.id == wiki.userId) {
                         userWikis.push(wiki)
@@ -21,6 +21,7 @@ module.exports = {
                     })
                   }
                   else{
+                    console.log("made it here")
                     if(req.user.role == 2 || req.user.id == wiki.userId){
                       userWikis.push(wiki)
                     }
@@ -30,6 +31,7 @@ module.exports = {
                   userWikis.push(wiki)
                 }
               });
+              console.log(userWikis)
               res.render("wikis/index", {userWikis});
           }
         })

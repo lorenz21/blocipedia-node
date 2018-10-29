@@ -16,13 +16,17 @@
             <button type="submit" class="btn btn-info">Make Public</button>
           </form>
           <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
-        <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/private" method="post">
-          <button type="submit" class="btn btn-dark">Make Private</button>
-        </form>
+          <form style="display:initial" action="/wikis/<%= wikiMarkdown.id %>/destroy" method="post">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form> 
       <% } %>
-      <% if(currentUser.id === wikiMarkdown.collaborators.userId) { %> 
-        <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
-      <% } %> 
+
+      <% if(wikiMarkdown.collaborators) { %>
+        <% if(currentUser.id === wikiMarkdown.collaborators.userId) { %> 
+          <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
+        <% } %> 
+      <% } %>
+
      <% } else { %>
         <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
         <% if(currentUser) { %>
