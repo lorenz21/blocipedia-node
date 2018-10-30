@@ -20,13 +20,11 @@
             <button type="submit" class="btn btn-danger">Delete</button>
           </form> 
       <% } %>
-
       <% if(wikiMarkdown.collaborators) { %>
         <% if(currentUser.id === wikiMarkdown.collaborators.userId) { %> 
           <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
         <% } %> 
       <% } %>
-
      <% } else { %>
         <a href="/wikis/<%= wikiMarkdown.id %>/edit" class="btn btn-warning">Edit</a>
         <% if(currentUser) { %>
